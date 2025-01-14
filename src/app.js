@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const app = express();
 const authRoutes = require('./routes/autentificacaoRota');
+const laboratorioRota = require ('./routes/laboratorioRota')
 
 app.use(express.json());
 app.use(cors());
@@ -15,6 +16,7 @@ mongoose
     .catch(err => console.error('Erro conexão', err));
 
 app.use('/auth', authRoutes);
+app.use('/laboratorio', laboratorioRota)
 
 
 
