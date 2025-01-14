@@ -1,4 +1,7 @@
 const Laboratorio = require('../models/laboratorio');
+const fs = require("fs");
+const path = require ("path");
+const PDFDocument = require ("pdfkit");
 
 const createLaboratory = async (req, res) => {
     const { name, capacity } = req.body;
@@ -10,10 +13,41 @@ const createLaboratory = async (req, res) => {
     try {
         const laboratorio = new Laboratorio({ name, capacity });
         await laboratorio.save();
-        res.status(201).json({ message: 'Laboratório criado com sucesso!', laboratorio });
+        res.status(201).json({ message: "Laboratório criado com sucesso!", laboratorio });
     } catch {
-        res.status(500).json({ error: 'Erro ao criar laboratório.' });
+        res.status(500).json({ error: "Erro ao criar laboratório." });
     }
 };
 
-module.exports = { createLaboratory };
+const gerarRelatorio = async (req, res) => {
+    try {
+        const laboratories = await Laboratorio.find();
+
+        if (!laboratories || laboratories.length === 0) {
+            return res.status(404).json({ error: "Nenhum laboratório encontrado." });
+        }
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", 'attachment; filename="laboratorio_relatorio.pdf"');
+
+        const doc = new PDFDocument();
+
+        doc.pipe(res);
+
+        doc.fontSize(14).text("Relatório de Laboratórios", { align: "center" });
+        doc.moveDown();
+
+        laboratories.forEach((lab, index) => {
+            doc.fontSize(12).text(`Laboratório ${index + 1}:`);
+            doc.text(`Nome: ${lab.name}`);
+            doc.text(`Capacidade: ${lab.capacity}`);
+            doc.moveDown();
+        });
+
+        doc.end();
+    } catch (error) {
+        res.status(500).json({ error: "Erro ao gerar relatório.", details: error.message });
+    }
+};
+
+module.exports = { createLaboratory, gerarRelatorio };
