@@ -18,8 +18,4 @@ mongoose
 app.use('/auth', authRoutes);
 app.use('/laboratorio', laboratorioRota)
 
-
-
-
-
 module.exports = app;

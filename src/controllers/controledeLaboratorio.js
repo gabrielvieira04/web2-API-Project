@@ -1,5 +1,4 @@
 const Laboratorio = require('../models/laboratorio');
-const fs = require("fs");
 const PDFDocument = require ("pdfkit");
 
 const createLaboratory = async (req, res) => {
